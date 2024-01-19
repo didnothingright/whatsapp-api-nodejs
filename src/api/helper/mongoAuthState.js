@@ -59,15 +59,17 @@ const BufferJSON = {
 
 module.exports = useMongoDBAuthState = async (collection) => {
     const writeData = (data, id) => {
+        const dataArray = Array.isArray(data) ? { dataArray: data } : data;
         return collection.replaceOne(
             { _id: id },
-            JSON.parse(JSON.stringify(data, BufferJSON.replacer)),
+            JSON.parse(JSON.stringify(dataArray, BufferJSON.replacer)),
             { upsert: true }
         )
     }
     const readData = async (id) => {
         try {
-            const data = JSON.stringify(await collection.findOne({ _id: id }))
+            const result = await collection.findOne({ _id: id });
+            const data = JSON.stringify(result.dataArray ?? result);
             return JSON.parse(data, BufferJSON.reviver)
         } catch (error) {
             return null

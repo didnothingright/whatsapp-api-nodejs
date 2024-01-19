@@ -16,15 +16,19 @@ const config = require('../../config/config')
 const downloadMessage = require('../helper/downloadMsg')
 const logger = require('pino')()
 const useMongoDBAuthState = require('../helper/mongoAuthState')
+const NodeCache = require('node-cache')
+const msgRetryCounterCache = new NodeCache()
 
 class WhatsAppInstance {
     socketConfig = {
-        defaultQueryTimeoutMs: undefined,
+        version: [2, 2403, 2],
         printQRInTerminal: false,
         logger: pino({
             level: config.log.level,
         }),
+        msgRetryCounterCache,
     }
+
     key = ''
     authState
     allowWebhook = undefined
